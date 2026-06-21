@@ -24,6 +24,7 @@ from utils.helpers import (
     clean_price,
     format_products,
     format_summary,
+    products_to_dict,
     remove_orders,
 )
 
@@ -156,15 +157,7 @@ class SamsPlugin(Star, PluginKVStoreMixin):
             products_list = None
             if self.use_llm_for_ocr and self.llm is not None:
                 try:
-                    llm_products = await self.llm.extract_products("\n".join(texts))
-                    products_list = [
-                        type(
-                            "OcrProduct",
-                            (),
-                            {"name": p.name, "price": p.price},
-                        )
-                        for p in llm_products
-                    ]
+                    products_list = await self.llm.extract_products("\n".join(texts))
                     logger.info("[Sams] 使用 LLM 提取 OCR 商品")
                 except Exception as e:
                     logger.warning(f"[Sams] LLM 提取商品失败，回退到启发式规则: {e}")
@@ -178,7 +171,7 @@ class SamsPlugin(Star, PluginKVStoreMixin):
                 )
                 return
 
-            products = self.ocr.to_products_dict(products_list)
+            products = products_to_dict(products_list)
             await self.data_service.set_products(products)
 
             msg = "商品识别完成：\n" + format_products(products)

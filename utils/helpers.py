@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import Any
+from typing import Any, Iterable
 
 from astrbot.api import logger
 
@@ -36,6 +36,21 @@ def clean_price(text: str) -> float | None:
         return price if price >= 0 else None
     except ValueError:
         return None
+
+
+def products_to_dict(products: Iterable[Any]) -> dict[str, dict[str, Any]]:
+    """将任意包含 name 和 price 属性的商品列表转为持久化字典。
+
+    Args:
+        products: 可迭代对象，元素需有 name 和 price 属性。
+
+    Returns:
+        以商品名为键的字典，值包含 name、price、quantity。
+    """
+    return {
+        p.name: {"name": p.name, "price": float(p.price), "quantity": 0}
+        for p in products
+    }
 
 
 def normalize_name(name: str) -> str:
