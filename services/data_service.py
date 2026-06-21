@@ -58,7 +58,7 @@ class DataService:
 
     async def get_products(self) -> dict[str, dict[str, Any]]:
         """读取商品表。"""
-        data = await self.plugin.get_async(self.KEY_PRODUCTS)
+        data = await self.plugin.get_kv_data(self.KEY_PRODUCTS, default={})
         if data is None:
             return {}
         if isinstance(data, dict):
@@ -68,12 +68,12 @@ class DataService:
 
     async def set_products(self, products: dict[str, dict[str, Any]]) -> None:
         """写入商品表。"""
-        await self.plugin.put_async(self.KEY_PRODUCTS, products)
+        await self.plugin.put_kv_data(self.KEY_PRODUCTS, products)
         logger.info(f"[Sams] 商品表已更新，共 {len(products)} 条")
 
     async def get_orders(self) -> list[dict[str, Any]]:
         """读取订单表。"""
-        data = await self.plugin.get_async(self.KEY_ORDERS)
+        data = await self.plugin.get_kv_data(self.KEY_ORDERS, default=[])
         if data is None:
             return []
         if isinstance(data, list):
@@ -83,13 +83,13 @@ class DataService:
 
     async def set_orders(self, orders: list[dict[str, Any]]) -> None:
         """写入订单表。"""
-        await self.plugin.put_async(self.KEY_ORDERS, orders)
+        await self.plugin.put_kv_data(self.KEY_ORDERS, orders)
         logger.info(f"[Sams] 订单表已更新，共 {len(orders)} 条")
 
     async def clear(self) -> None:
         """清空商品表与订单表。"""
-        await self.plugin.put_async(self.KEY_PRODUCTS, {})
-        await self.plugin.put_async(self.KEY_ORDERS, [])
+        await self.plugin.put_kv_data(self.KEY_PRODUCTS, {})
+        await self.plugin.put_kv_data(self.KEY_ORDERS, [])
         logger.info("[Sams] 会话数据已清空")
 
     def save_image(self, image_bytes: bytes, suffix: str = ".jpg") -> Path:

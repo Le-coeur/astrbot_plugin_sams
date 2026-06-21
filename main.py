@@ -13,7 +13,7 @@ from astrbot.api import logger
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.message_components import Image, Plain
 from astrbot.api.star import Context, Star, register
-from astrbot.core.star.filter.plugin import PluginKVStoreMixin
+from astrbot.core.utils.plugin_kv_store import PluginKVStoreMixin
 
 from services.data_service import DataService
 from services.llm_service import LlmService
