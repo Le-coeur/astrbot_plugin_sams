@@ -136,3 +136,5 @@ astrbot_plugin_sams/
 | 2026-06-21 08:18 | 新增 LLM 测试 | 完成 | tests/test_llm_service.py |
 | 2026-06-21 08:19 | 运行 ruff 与全部测试 | 通过 | parser、helpers、llm_service 测试均通过 |
 | 2026-06-21 08:20 | 同步 PLAN.md | 完成 | 追加 LLM 与配置 Schema 的实施记录 |
+| 2026-06-21 08:25 | 敏感信息检查 | 完成 | 未发现硬编码 SecretId/SecretKey/API Key；data/、.python-version 已加入 .gitignore |
+| 2026-06-21 08:26 | SSH 推送到 GitHub | 完成 | 提交 21 个文件到 master 分支，仓库地址 git@github.com:Le-coeur/astrbot_plugin_sams.git |
