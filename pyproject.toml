@@ -1,0 +1,21 @@
+[project]
+name = "astrbot_plugin_sams"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Le-coeur", email = "AC-ZJY@qq.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = ["astrbot (>=4.25.5,<5.0.0)", "aiohttp (>=3.14.1,<4.0.0)", "tencentcloud-sdk-python (>=3.1.119,<4.0.0)"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
+[dependency-groups]
+dev = [
+    "ruff (>=0.15.18,<0.16.0)"
+]

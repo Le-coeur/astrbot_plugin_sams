@@ -1,0 +1,2 @@
+aiohttp>=3.9.0
+tencentcloud-sdk-python>=3.0.0

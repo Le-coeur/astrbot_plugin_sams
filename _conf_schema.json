@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "山姆接龙助手配置",
+  "description": "配置腾讯云 OCR 与大模型参数，用于识别商品截图和解析接龙文本。",
+  "type": "object",
+  "properties": {
+    "secret_id": {
+      "type": "string",
+      "title": "腾讯云 SecretId",
+      "description": "访问腾讯云 OCR 所需的 SecretId。"
+    },
+    "secret_key": {
+      "type": "string",
+      "title": "腾讯云 SecretKey",
+      "description": "访问腾讯云 OCR 所需的 SecretKey。"
+    },
+    "region": {
+      "type": "string",
+      "title": "腾讯云地域",
+      "description": "腾讯云 OCR 服务所在地域。",
+      "default": "ap-guangzhou"
+    },
+    "llm_provider": {
+      "type": "string",
+      "title": "大模型提供商",
+      "description": "选择大模型提供商，支持 OpenAI 兼容接口。",
+      "enum": ["moonshot", "openai", "deepseek", "custom"],
+      "default": "moonshot"
+    },
+    "llm_api_key": {
+      "type": "string",
+      "title": "大模型 API Key",
+      "description": "调用大模型 API 所需的 Key。"
+    },
+    "llm_base_url": {
+      "type": "string",
+      "title": "自定义 Base URL",
+      "description": "自定义大模型 API 地址，留空则使用提供商默认地址。"
+    },
+    "llm_model": {
+      "type": "string",
+      "title": "模型名称",
+      "description": "例如 moonshot-v1-8k、gpt-4o、deepseek-chat。",
+      "default": "moonshot-v1-8k"
+    },
+    "use_llm_for_order": {
+      "type": "boolean",
+      "title": "使用 LLM 解析接龙",
+      "description": "启用后，/sams_order 会优先使用大模型解析接龙文本；关闭则使用正则解析。",
+      "default": true
+    },
+    "use_llm_for_ocr": {
+      "type": "boolean",
+      "title": "使用 LLM 分析 OCR",
+      "description": "启用后，/sams_scan 会优先使用大模型从 OCR 文本中提取商品；关闭则使用启发式规则。",
+      "default": true
+    }
+  }
+}

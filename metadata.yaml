@@ -1,6 +1,12 @@
-name: helloworld # 插件唯一识别名，以 astrbot_plugin_ 前缀开头
-display_name: helloworld # 用于展示的名字，可以是方便人类阅读的名字（需要版本 >= v4.5.0，低版本不会报错，请放心填写）
-desc: AstrBot 插件示例。 # 插件简短描述
-version: v1.3.0 # 插件版本号。格式：v1.1.1 或者 v1.1
-author: Soulter # 作者
-repo: https://github.com/Soulter/helloworld # 插件的仓库地址
+name: astrbot_plugin_sams
+display_name: 山姆接龙助手
+short_desc: 自动汇总山姆团购接龙，识别商品截图并生成采购清单。
+desc: 整理山姆商品数据，支持 OCR 识别商品截图、解析接龙文本、生成采购物品详单与采购人详单。
+version: v1.0.0
+author: Le-coeur
+repo: https://github.com/Le-coeur/astrbot_plugin_sams
+astrbot_version: ">=4.25,<5"
+support_platforms:
+  - wecom
+  - weixin_oc
+  - aiocqhttp
