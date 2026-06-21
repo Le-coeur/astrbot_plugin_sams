@@ -55,52 +55,77 @@ class SamsPlugin(Star, PluginKVStoreMixin):
 
     async def initialize(self) -> None:
         """插件初始化时读取 OCR 与 LLM 配置。"""
-        cfg = self._get_config()
+        try:
+            cfg = self._get_config()
+            logger.info(f"[Sams] 读取到插件配置: {cfg}")
 
-        # OCR
-        secret_id = cfg.get("secret_id", "")
-        secret_key = cfg.get("secret_key", "")
-        region = cfg.get("region", "ap-guangzhou")
-        if secret_id and secret_key:
-            self.ocr = OcrService(secret_id, secret_key, region)
-            logger.info("[Sams] OCR 服务已初始化")
-        else:
-            logger.warning("[Sams] 未配置腾讯云 OCR 密钥，/sams_scan 指令不可用")
+            # OCR
+            secret_id = cfg.get("secret_id", "")
+            secret_key = cfg.get("secret_key", "")
+            region = cfg.get("region", "ap-guangzhou")
+            if secret_id and secret_key:
+                self.ocr = OcrService(secret_id, secret_key, region)
+                logger.info("[Sams] OCR 服务已初始化")
+            else:
+                logger.warning("[Sams] 未配置腾讯云 OCR 密钥，/sams_scan 指令不可用")
 
-        # LLM
-        self.use_llm_for_order = cfg.get("use_llm_for_order", True)
-        self.use_llm_for_ocr = cfg.get("use_llm_for_ocr", True)
-        llm_api_key = cfg.get("llm_api_key", "")
-        if llm_api_key:
-            try:
-                self.llm = LlmService(
-                    api_key=llm_api_key,
-                    provider=cfg.get("llm_provider", "moonshot"),
-                    base_url=cfg.get("llm_base_url", None),
-                    model=cfg.get("llm_model", "moonshot-v1-8k"),
-                )
-                logger.info("[Sams] LLM 服务已初始化")
-            except Exception as e:
-                logger.error(f"[Sams] LLM 服务初始化失败: {e}")
-                self.llm = None
-        else:
-            logger.warning("[Sams] 未配置 LLM API Key，将使用本地正则/启发式解析")
+            # LLM
+            self.use_llm_for_order = cfg.get("use_llm_for_order", True)
+            self.use_llm_for_ocr = cfg.get("use_llm_for_ocr", True)
+            llm_api_key = cfg.get("llm_api_key", "")
+            if llm_api_key:
+                try:
+                    self.llm = LlmService(
+                        api_key=llm_api_key,
+                        provider=cfg.get("llm_provider", "moonshot"),
+                        base_url=cfg.get("llm_base_url", None),
+                        model=cfg.get("llm_model", "moonshot-v1-8k"),
+                    )
+                    logger.info("[Sams] LLM 服务已初始化")
+                except Exception as e:
+                    logger.error(f"[Sams] LLM 服务初始化失败: {e}")
+                    self.llm = None
+            else:
+                logger.warning("[Sams] 未配置 LLM API Key，将使用本地正则/启发式解析")
+        except Exception as e:
+            logger.error(f"[Sams] 插件初始化异常: {e}", exc_info=True)
+            raise
 
     def _get_config(self) -> dict:
         """读取插件配置，支持多层级访问。"""
         # 优先读取 AstrBot 注入的 self.config
         direct_cfg = getattr(self, "config", None)
-        if isinstance(direct_cfg, dict) and direct_cfg:
+        if isinstance(direct_cfg, dict):
             return direct_cfg
 
         # 其次从 context.config 中读取
         plugin_cfg = getattr(self.context, "config", None)
         if plugin_cfg is not None:
+            # 情况 1：context.config 是字典，且已按插件名嵌套
+            if isinstance(plugin_cfg, dict):
+                nested = plugin_cfg.get("astrbot_plugin_sams")
+                if isinstance(nested, dict):
+                    return nested
+                return plugin_cfg
+
+            # 情况 2：context.config 是类 dict 对象（如 Config 实例）
             if hasattr(plugin_cfg, "get"):
-                cfg = plugin_cfg.get("astrbot_plugin_sams", {})
-                if isinstance(cfg, dict):
-                    return cfg
-                return dict(cfg) if cfg else {}
+                try:
+                    cfg = plugin_cfg.get("astrbot_plugin_sams", {})
+                    if isinstance(cfg, dict):
+                        return cfg
+                except Exception:
+                    pass
+
+            # 情况 3：尝试直接遍历取字典
+            if hasattr(plugin_cfg, "__getitem__"):
+                try:
+                    cfg = plugin_cfg["astrbot_plugin_sams"]
+                    if isinstance(cfg, dict):
+                        return cfg
+                except Exception:
+                    pass
+
         return {}
 
     def _get_plain_text(self, event: AstrMessageEvent) -> str:
