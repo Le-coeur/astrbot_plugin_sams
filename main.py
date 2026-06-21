@@ -8,6 +8,12 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+# 将插件根目录加入模块搜索路径，确保 AstrBot 能加载 services/、utils/ 等子包
+sys.path.insert(0, str(Path(__file__).parent))
+
 import aiohttp
 from astrbot.api import logger
 from astrbot.api.event import filter, AstrMessageEvent
